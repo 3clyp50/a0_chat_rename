@@ -36,7 +36,7 @@
 
   <template x-if="$store.chatRename">
     <div class="modal-footer" data-modal-footer>
-      <button class="btn btn-cancel" @click="$store.chatRename.resetToAuto()" :disabled="$store.chatRename.isSaving">
+      <button class="btn" @click="$store.chatRename.resetToAuto()" :disabled="$store.chatRename.isSaving">
         Reset to auto
       </button>
       <button class="btn btn-cancel" @click="$store.chatRename.closeRenameModal()" :disabled="$store.chatRename.isSaving">
