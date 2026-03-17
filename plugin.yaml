@@ -1,0 +1,7 @@
+name: chat_rename
+title: Chat Rename
+description: Rename chats from the sidebar and keep manual titles locked against automatic renaming.
+version: 1.0.0
+settings_sections: []
+per_project_config: false
+per_agent_config: false

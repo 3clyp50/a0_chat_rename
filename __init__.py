@@ -1,0 +1,1 @@
+# Chat Rename plugin package.

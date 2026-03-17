@@ -1,0 +1,24 @@
+<html>
+<head>
+  <script type="module">
+    import { store } from "/plugins/chat_rename/webui/chat-rename-store.js";
+  </script>
+</head>
+<body>
+  <div x-data>
+    <template x-if="$store.chatRename">
+      <div
+        class="chat-rename-sidebar-anchor"
+        x-create="$store.chatRename.mountSidebarEnhancer()"
+        x-destroy="$store.chatRename.cleanupSidebarEnhancer()"
+      ></div>
+    </template>
+  </div>
+
+  <style>
+    .chat-rename-sidebar-anchor {
+      display: none;
+    }
+  </style>
+</body>
+</html>

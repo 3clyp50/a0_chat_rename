@@ -1,0 +1,98 @@
+<html>
+<head>
+  <title>Rename Chat</title>
+  <script type="module">
+    import { store } from "/plugins/chat_rename/webui/chat-rename-store.js";
+  </script>
+</head>
+<body>
+  <div x-data>
+    <template x-if="$store.chatRename">
+      <div class="chat-rename-modal-root" x-init="$nextTick(() => $refs.renameInput?.focus())">
+        <div class="chat-rename-form">
+          <label class="chat-rename-label" for="chat-rename-input">Chat name</label>
+          <input
+            id="chat-rename-input"
+            class="chat-rename-input"
+            type="text"
+            maxlength="120"
+            x-ref="renameInput"
+            x-model="$store.chatRename.draftName"
+            @keydown.enter.prevent="$store.chatRename.saveRename()"
+            :disabled="$store.chatRename.isSaving"
+            placeholder="Enter a chat name"
+          />
+          <p class="chat-rename-current">
+            Current label:
+            <strong x-text="$store.chatRename.getChatLabel($store.chatRename.targetContextId)"></strong>
+          </p>
+          <p class="chat-rename-hint">
+            Manual titles are persisted and automatic chat renaming stays disabled until you reset this chat to auto mode.
+          </p>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <template x-if="$store.chatRename">
+    <div class="modal-footer" data-modal-footer>
+      <button class="btn btn-cancel" @click="$store.chatRename.resetToAuto()" :disabled="$store.chatRename.isSaving">
+        Reset to auto
+      </button>
+      <button class="btn btn-cancel" @click="$store.chatRename.closeRenameModal()" :disabled="$store.chatRename.isSaving">
+        Cancel
+      </button>
+      <button
+        class="btn btn-ok"
+        @click="$store.chatRename.saveRename()"
+        :disabled="$store.chatRename.isSaving || !$store.chatRename.draftName.trim()"
+      >
+        Save
+      </button>
+    </div>
+  </template>
+
+  <style>
+    .chat-rename-modal-root {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+      width: 100%;
+    }
+
+    .chat-rename-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+      margin: 1rem;
+    }
+
+    .chat-rename-label {
+      color: var(--color-text);
+      font-weight: 600;
+    }
+
+    .chat-rename-input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--color-border);
+      background: var(--color-background);
+      color: var(--color-text);
+    }
+
+    .chat-rename-input:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .chat-rename-current,
+    .chat-rename-hint {
+      margin: 0;
+      color: var(--color-text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+  </style>
+</body>
+</html>
