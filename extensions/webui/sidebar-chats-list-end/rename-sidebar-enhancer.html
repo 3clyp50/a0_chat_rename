@@ -33,11 +33,14 @@
 
     /* ================================================================
        COMPACT SIDEBAR BUTTONS
-       Responsive button sizing and three-dot menu for touch devices.
 
-       Pointer (desktop): buttons hidden, appear on hover/focus-within
-       Touch (mobile):    three-dot on selected chat, expand on tap
-       Hybrid (pointer+touch): hover shows buttons, three-dot fallback
+       A0 hardcodes <body class="device-pointer"> — no JS toggles
+       device-touch. Therefore we use CSS media queries for reliable
+       input detection AND prefix touch selectors with .device-pointer
+       (since it's always present) to win specificity battles.
+
+       @media (hover: hover) and (pointer: fine)  = pointer/desktop
+       @media (hover: none) and (pointer: coarse)  = touch/mobile
        ================================================================ */
 
     /* --- Default compact sizing (all devices) --- */
@@ -56,24 +59,70 @@
       display: none !important;
     }
 
-    /* --- POINTER DEVICES (desktop/laptop) ---
-       Hide buttons when not interacting; show on hover or keyboard focus.
-       Uses display:none so buttons consume zero layout space. */
+    /* ================================================================
+       POINTER DEVICES (desktop/laptop)
+       Hide buttons when not interacting; show on hover or keyboard.
+       ================================================================ */
     .device-pointer .chat-container:not(:hover):not(:focus-within) .chat-list-action-btn {
-      display: none;
+      display: none !important;
     }
     .device-pointer .chat-container:hover .chat-list-action-btn,
     .device-pointer .chat-container:focus-within .chat-list-action-btn {
-      display: inline-flex;
+      display: inline-flex !important;
     }
-    /* Keep three-dot hidden on pointer hover (not needed) */
     .device-pointer .chat-container:hover .chat-more-actions-btn,
     .device-pointer .chat-container:focus-within .chat-more-actions-btn {
       display: none !important;
     }
 
-    /* --- TOUCH DEVICES (mobile/tablet) ---
-       Larger tap targets for touch interaction. */
+    /* ================================================================
+       TOUCH DEVICES (mobile/tablet)
+       Detected via @media (hover: none) and (pointer: coarse).
+       Since body always has .device-pointer, we prefix selectors
+       with body.device-pointer to MATCH specificity and win by
+       source order (these rules come after the pointer rules above).
+       ================================================================ */
+    @media (hover: none) and (pointer: coarse) {
+      /* Larger tap targets */
+      body.device-pointer .chat-container .chat-list-action-btn {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        margin-right: 4px;
+      }
+      body.device-pointer .chat-container .chat-list-action-btn .material-symbols-outlined {
+        font-size: 22px;
+      }
+
+      /* Override pointer rules: hide ALL buttons always (not just non-hover) */
+      body.device-pointer .chat-container .chat-list-action-btn {
+        display: none !important;
+      }
+      body.device-pointer .chat-container:hover .chat-list-action-btn {
+        display: none !important;
+      }
+      body.device-pointer .chat-container:focus-within .chat-list-action-btn {
+        display: none !important;
+      }
+
+      /* Show only three-dot on selected chat */
+      body.device-pointer .chat-container.chat-selected .chat-more-actions-btn {
+        display: inline-flex !important;
+      }
+
+      /* When expanded: show all action buttons, hide three-dot */
+      body.device-pointer .chat-container.chat-actions-expanded .chat-list-action-btn {
+        display: inline-flex !important;
+      }
+      body.device-pointer .chat-container.chat-actions-expanded .chat-more-actions-btn {
+        display: none !important;
+      }
+    }
+
+    /* ================================================================
+       FALLBACK: A0's .device-touch class (if ever added dynamically)
+       Same rules but using the class selector.
+       ================================================================ */
     .device-touch .chat-container .chat-list-action-btn {
       width: 36px;
       height: 36px;
@@ -83,65 +132,16 @@
     .device-touch .chat-container .chat-list-action-btn .material-symbols-outlined {
       font-size: 22px;
     }
-
-    /* Hide all action buttons by default on touch */
     .device-touch .chat-container .chat-list-action-btn {
-      display: none;
+      display: none !important;
     }
-
-    /* Show only three-dot on selected chat */
     .device-touch .chat-container.chat-selected .chat-more-actions-btn {
       display: inline-flex !important;
     }
-
-    /* When expanded: show all action buttons, hide three-dot */
     .device-touch .chat-container.chat-actions-expanded .chat-list-action-btn {
-      display: inline-flex;
-    }
-    .device-touch .chat-container.chat-actions-expanded .chat-more-actions-btn {
-      display: none !important;
-    }
-
-    /* --- HYBRID DEVICES (pointer + touch) ---
-       Use compact pointer sizing (not the larger touch targets).
-       Support hover, focus-within, AND three-dot fallback on selected. */
-    .device-pointer.device-touch .chat-container .chat-list-action-btn {
-      width: 24px;
-      height: 24px;
-      min-width: 24px;
-      margin-right: 2px;
-    }
-    .device-pointer.device-touch .chat-container .chat-list-action-btn .material-symbols-outlined {
-      font-size: 16px;
-    }
-
-    /* Hybrid: hide buttons by default */
-    .device-pointer.device-touch .chat-container:not(:hover):not(:focus-within) .chat-list-action-btn {
-      display: none;
-    }
-
-    /* Hybrid: show on hover/focus */
-    .device-pointer.device-touch .chat-container:hover .chat-list-action-btn,
-    .device-pointer.device-touch .chat-container:focus-within .chat-list-action-btn {
-      display: inline-flex;
-    }
-
-    /* Hybrid: hide three-dot on hover (pointer mode) */
-    .device-pointer.device-touch .chat-container:hover .chat-more-actions-btn,
-    .device-pointer.device-touch .chat-container:focus-within .chat-more-actions-btn {
-      display: none !important;
-    }
-
-    /* Hybrid: show three-dot on selected when NOT hovered (touch fallback) */
-    .device-pointer.device-touch .chat-container.chat-selected:not(:hover):not(:focus-within) .chat-more-actions-btn {
       display: inline-flex !important;
     }
-
-    /* Hybrid: when expanded, show all buttons and hide three-dot */
-    .device-pointer.device-touch .chat-container.chat-actions-expanded .chat-list-action-btn {
-      display: inline-flex;
-    }
-    .device-pointer.device-touch .chat-container.chat-actions-expanded .chat-more-actions-btn {
+    .device-touch .chat-container.chat-actions-expanded .chat-more-actions-btn {
       display: none !important;
     }
   </style>
