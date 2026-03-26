@@ -21,9 +21,13 @@ class RenameChat(Extension):
             return
 
         try:
+            # get utility model config via _model_config plugin
+            from plugins._model_config.helpers.model_config import get_utility_model_config
+            util_cfg = get_utility_model_config(self.agent)
+
             history_text = self.agent.history.output_text()
             ctx_length = min(
-                int(self.agent.config.utility_model.ctx_length * 0.7),
+                int(util_cfg.get("ctx_length", 128000) * 0.7),
                 5000,
             )
             history_text = tokens.trim_to_tokens(history_text, ctx_length, "start")
