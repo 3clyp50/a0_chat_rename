@@ -67,12 +67,16 @@ const model = {
 
       if (!context) {
         existing?.remove();
+        row.querySelector(".chat-more-actions-btn")?.remove();
+        row.classList.remove("chat-actions-expanded");
+        delete row.dataset.chatRenameContextId;
         return;
       }
 
       row.dataset.chatRenameContextId = context.id;
 
       if (existing?.dataset.contextId === context.id) {
+        this._ensureDotButton(row);
         return;
       }
 
@@ -85,6 +89,8 @@ const model = {
       } else {
         row.appendChild(button);
       }
+
+      this._ensureDotButton(row);
     });
   },
 
@@ -115,6 +121,39 @@ const model = {
           ?.textContent?.trim() === "close",
     );
   },
+
+  _ensureDotButton(row) {
+    if (row.querySelector(".chat-more-actions-btn")) return;
+
+    const dotBtn = document.createElement("button");
+    dotBtn.type = "button";
+    dotBtn.className =
+      "btn-icon-action chat-list-action-btn chat-more-actions-btn";
+    dotBtn.setAttribute("title", "More actions");
+    dotBtn.setAttribute("aria-label", "More actions");
+    dotBtn.setAttribute("aria-expanded", "false");
+    dotBtn.innerHTML =
+      '<span class="material-symbols-outlined">more_vert</span>';
+
+    dotBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const wasExpanded = row.classList.contains("chat-actions-expanded");
+      const nextExpanded = !wasExpanded;
+      document.querySelectorAll(".chat-actions-expanded").forEach((r) => {
+        r.classList.remove("chat-actions-expanded");
+        const btn = r.querySelector(".chat-more-actions-btn");
+        if (btn) btn.setAttribute("aria-expanded", "false");
+      });
+      if (nextExpanded) {
+        row.classList.add("chat-actions-expanded");
+      }
+      dotBtn.setAttribute("aria-expanded", String(nextExpanded));
+    });
+
+    row.appendChild(dotBtn);
+  },
+
 
   getContextById(contextId) {
     return (
